@@ -46,10 +46,42 @@ function Index() {
       });
     }, { threshold: 0.1, rootMargin: "0px 0px -35px 0px" });
 
-    targets.forEach((target) => {
+    targets.forEach((target, i) => {
       target.classList.add("reveal");
+      if (target.matches(".approach-copy, .capabilities-copy, blockquote")) target.classList.add("from-right");
+      else if (target.matches(".approach-list li, .models-intro, .process-intro, .metrics, .contact .container")) target.classList.add("from-left");
       observer.observe(target);
+      void i;
     });
+
+    // Word-by-word headline reveal
+    site.querySelectorAll<HTMLElement>("section:not(.hero) h2").forEach((h) => {
+      if (h.dataset.split) return;
+      h.dataset.split = "1";
+      let n = 0;
+      const walk = (node: Node) => {
+        Array.from(node.childNodes).forEach((c) => {
+          if (c.nodeType === 3) {
+            const frag = document.createDocumentFragment();
+            (c.textContent || "").split(/(\s+)/).forEach((w) => {
+              if (!w.trim()) { frag.appendChild(document.createTextNode(w)); return; }
+              const s = document.createElement("span");
+              s.className = "word"; s.textContent = w; s.style.setProperty("--i", String(n++));
+              frag.appendChild(s);
+            });
+            c.parentNode?.replaceChild(frag, c);
+          } else if (c.nodeType === 1 && (c as Element).tagName !== "BR") walk(c);
+        });
+      };
+      walk(h);
+      h.classList.add("split-title");
+      observer.observe(h);
+    });
+
+    // Sections slide up into place as they enter
+    const sections = site.querySelectorAll<HTMLElement>("main > section:not(.hero), .stats-band");
+    sections.forEach((s) => { s.classList.add("section-slide"); observer.observe(s); });
+
     site.classList.add("motion-ready");
     return () => observer.disconnect();
   }, []);

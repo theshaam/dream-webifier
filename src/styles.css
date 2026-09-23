@@ -430,3 +430,57 @@ h2 { font-size: clamp(34px, 3.5vw, 50px); line-height: 1.06; }
   .process .steps::before { display: none; }
   .insights-head { flex-wrap: wrap; }
 }
+/* Patterned backdrop, glowing wave separators, section slides and headline reveals. */
+.site { position: relative; background:
+  radial-gradient(circle at 1px 1px, color-mix(in oklab, var(--primary) 18%, transparent) 1px, transparent 1.5px) 0 0 / 26px 26px,
+  linear-gradient(60deg, transparent 49.5%, color-mix(in oklab, var(--violet) 9%, transparent) 50%, transparent 50.5%) 0 0 / 90px 52px,
+  var(--background); }
+.scene-overlay::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .35; mix-blend-mode: screen;
+  background: radial-gradient(circle at 1px 1px, color-mix(in oklab, var(--primary) 30%, transparent) 1px, transparent 1.6px) 0 0 / 24px 24px;
+  mask-image: linear-gradient(0deg, transparent, var(--background) 30%, var(--background) 70%, transparent); }
+.scene-overlay { position: absolute; }
+/* Wavy luminous separator replacing the flat arc */
+.scene-section::before, .work::before, .technology::before {
+  top: -30px; height: 60px; border: 0; border-radius: 0; transform: none; box-shadow: none;
+  background:
+    radial-gradient(60% 40% at 30% 55%, color-mix(in oklab, var(--primary) 35%, transparent), transparent 70%),
+    radial-gradient(50% 40% at 78% 45%, color-mix(in oklab, var(--violet) 40%, transparent), transparent 70%);
+  -webkit-mask: none;
+}
+.scene-section::after, .work::after, .technology::after {
+  content: ""; position: absolute; z-index: 5; left: 0; right: 0; top: -22px; height: 44px; pointer-events: none;
+  background: linear-gradient(90deg, var(--violet), var(--primary) 30%, var(--foreground) 50%, var(--primary) 70%, var(--violet)) 0 0 / 200% 100%;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 44' preserveAspectRatio='none'%3E%3Cpath d='M0 30 C 200 5, 380 40, 600 22 S 1000 4, 1200 26' fill='none' stroke='black' stroke-width='2.4'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  filter: drop-shadow(0 0 6px var(--primary)) drop-shadow(0 0 14px var(--violet));
+  animation: line-flow 7s linear infinite;
+}
+.section-slide:nth-of-type(even)::after { transform: scaleX(-1); }
+@keyframes line-flow { to { background-position: -200% 0; } }
+
+/* Section-to-section slide */
+.motion-ready .section-slide > .container { transition: transform 1s cubic-bezier(.18,.7,.25,1), opacity 1s ease; }
+.motion-ready .section-slide:not(.is-visible) > .container { transform: translateY(60px); opacity: .0; }
+.motion-ready .section-slide > .scene-bg { transition: transform 1.4s cubic-bezier(.18,.7,.25,1); }
+.motion-ready .section-slide:not(.is-visible) > .scene-bg { transform: scale(1.12) translateY(30px); }
+.motion-ready .section-slide::after { transition: clip-path 1.4s cubic-bezier(.3,.7,.2,1); }
+.motion-ready .section-slide:not(.is-visible)::after { clip-path: inset(0 100% 0 0); }
+.motion-ready .section-slide.is-visible::after { clip-path: inset(0 0 0 0); }
+
+/* Directional reveals */
+.motion-ready .reveal.from-left { transform: translateX(-50px); }
+.motion-ready .reveal.from-right { transform: translateX(50px); }
+.motion-ready .reveal.from-left.is-visible, .motion-ready .reveal.from-right.is-visible { transform: none; }
+.approach-list li:nth-child(2) { transition-delay: 80ms; } .approach-list li:nth-child(3) { transition-delay: 160ms; } .approach-list li:nth-child(4) { transition-delay: 240ms; }
+
+/* Headline word reveal */
+.split-title .word { display: inline-block; }
+.motion-ready .split-title .word { opacity: 0; transform: translateY(.6em) rotate(3deg); filter: blur(6px); transition: opacity 700ms ease, transform 700ms cubic-bezier(.18,.7,.25,1), filter 700ms ease; transition-delay: calc(var(--i) * 60ms + 120ms); }
+.motion-ready .split-title.is-visible .word { opacity: 1; transform: none; filter: none; }
+.eyebrow { position: relative; }
+.split-title:hover .word { text-shadow: 0 0 18px color-mix(in oklab, var(--primary) 45%, transparent); }
+.hero h1 .cyan { background: linear-gradient(90deg, var(--primary), var(--foreground), var(--primary)) 0 0 / 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: line-flow 6s linear infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-ready .split-title .word, .motion-ready .section-slide > .container, .motion-ready .section-slide > .scene-bg { opacity: 1 !important; transform: none !important; filter: none !important; }
+  .motion-ready .section-slide::after { clip-path: none !important; }
+}
