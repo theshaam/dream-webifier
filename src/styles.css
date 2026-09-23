@@ -484,3 +484,4 @@ h2 { font-size: clamp(34px, 3.5vw, 50px); line-height: 1.06; }
   .motion-ready .split-title .word, .motion-ready .section-slide > .container, .motion-ready .section-slide > .scene-bg { opacity: 1 !important; transform: none !important; filter: none !important; }
   .motion-ready .section-slide::after { clip-path: none !important; }
 }
+.work { position: relative; }
