@@ -7,6 +7,7 @@ import projects from "../assets/gamenock-illustrated-adventure.jpg";
 import western from "../assets/gamenock-illustrated-western.jpg";
 import racer from "../assets/gamenock-illustrated-racer.jpg";
 import keyart from "../assets/gamenock-illustrated-keyart.jpg";
+import longWorld from "../assets/gamenock-long-world.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({ meta: [
@@ -56,8 +57,8 @@ function Index() {
 
     // Word-by-word headline reveal
     site.querySelectorAll<HTMLElement>("section:not(.hero) h2").forEach((h) => {
-      if (h.dataset.split) return;
-      h.dataset.split = "1";
+      if (h.dataset["split"]) return;
+      h.dataset["split"] = "1";
       let n = 0;
       const walk = (node: Node) => {
         Array.from(node.childNodes).forEach((c) => {
@@ -86,6 +87,25 @@ function Index() {
     return () => observer.disconnect();
   }, []);
 
+  // Continuous world background: pans the tall image top-to-bottom as the page scrolls
+  const worldRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const el = worldRef.current; if (!el) return;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = max > 0 ? window.scrollY / max : 0;
+      const travel = el.offsetHeight - window.innerHeight;
+      el.style.transform = `translate3d(-50%, ${-travel * progress}px, 0)`;
+    };
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => { window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onScroll); cancelAnimationFrame(raf); };
+  }, []);
+
   const moveHero = (event: PointerEvent<HTMLElement>) => {
     if (event.pointerType !== "mouse" || !window.matchMedia("(prefers-reduced-motion: no-preference)").matches) return;
     const bounds = event.currentTarget.getBoundingClientRect();
@@ -101,6 +121,7 @@ function Index() {
   };
 
   return <main className="site" ref={siteRef}>
+    <div className="world-bg" aria-hidden="true"><div className="world-track" ref={worldRef}><img src={longWorld} alt="" width={1024} height={1920} /></div><div className="world-pattern" /></div>
     <section className="hero" id="top" ref={heroRef} onPointerMove={moveHero} onPointerLeave={resetHero}>
       <img src={keyart} className="hero-image" alt="Adventurer and robot overlooking a floating fantasy city" width={1920} height={1024} />
       <div className="hero-shade" />
