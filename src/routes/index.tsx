@@ -57,8 +57,8 @@ function Index() {
 
     // Word-by-word headline reveal
     site.querySelectorAll<HTMLElement>("section:not(.hero) h2").forEach((h) => {
-      if (h.dataset.split) return;
-      h.dataset.split = "1";
+      if (h.dataset["split"]) return;
+      h.dataset["split"] = "1";
       let n = 0;
       const walk = (node: Node) => {
         Array.from(node.childNodes).forEach((c) => {
